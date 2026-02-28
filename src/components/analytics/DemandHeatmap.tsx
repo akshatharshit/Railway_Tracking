@@ -17,6 +17,7 @@ export function DemandHeatmap() {
         setCells(generateDemandHeatmap(today, days));
         setPeaks(getUpcomingPeakPeriods());
     }, [days]);
+    
 
 
     
