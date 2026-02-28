@@ -1,0 +1,22 @@
+{
+    "name": "RailIntel — Smart Railway Intelligence",
+    "short_name": "RailIntel",
+    "description": "Real-time railway intelligence, AI predictions, route optimization, and live train tracking.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0f1e",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "64x64",
+            "type": "image/x-icon"
+        }
+    ],
+    "categories": [
+        "travel",
+        "transportation",
+        "utilities"
+    ]
+}
