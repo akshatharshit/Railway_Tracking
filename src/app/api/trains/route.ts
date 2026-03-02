@@ -16,11 +16,17 @@ export async function GET(request: NextRequest) {
 
     // Filter by departure and arrival stations
     if (from) {
-        filtered = filtered.filter(t => t.from.toUpperCase().includes(from.toUpperCase()));
+        filtered = filtered.filter(t =>
+            t.sourceCode.toUpperCase().includes(from.toUpperCase()) ||
+            t.stops[0]?.stationCode.toUpperCase().includes(from.toUpperCase())
+        );
     }
 
     if (to) {
-        filtered = filtered.filter(t => t.to.toUpperCase().includes(to.toUpperCase()));
+        filtered = filtered.filter(t =>
+            t.destinationCode.toUpperCase().includes(to.toUpperCase()) ||
+            t.stops[t.stops.length - 1]?.stationCode.toUpperCase().includes(to.toUpperCase())
+        );
     }
 
     // Filter by search query (train name or number)
@@ -36,14 +42,14 @@ export async function GET(request: NextRequest) {
     const result = filtered.slice(0, limit).map(t => ({
         number: t.number,
         name: t.name,
-        from: t.from,
-        to: t.to,
-        fromName: t.fromName,
-        toName: t.toName,
+        from: t.sourceCode,
+        to: t.destinationCode,
+        fromName: t.stops[0]?.stationName || 'Unknown',
+        toName: t.stops[t.stops.length - 1]?.stationName || 'Unknown',
         departureTime: t.stops[0]?.departureTime || '--',
         arrivalTime: t.stops[t.stops.length - 1]?.arrivalTime || '--',
-        duration: t.duration,
-        type: t.type,
+        duration: t.stops.length > 0 ? `${Math.round((t.stops[t.stops.length - 1].distanceFromSource || 0) / (t.avgSpeed || 50))}h` : '--',
+        type: t.category,
     }));
 
     return NextResponse.json(

@@ -9,6 +9,32 @@ import { getAvailability } from '@/lib/availability';
 const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY || '';
 const RAILWAY_API_HOST = process.env.RAILWAY_API_HOST || 'irctc1.p.rapidapi.com';
 
+// Transform availability API response
+function transformAvailabilityResponse(apiData: any) {
+    if (!apiData || !apiData.data) return null;
+
+    const data = apiData.data;
+
+    try {
+        return {
+            trainNumber: data.TrainNo || data.trainNumber,
+            trainName: data.TrainName || data.trainName,
+            travelDate: data.TravelDate || data.date,
+            availability: (data.AvailabilityDetails || data.availability || []).map((cls: any) => ({
+                class: cls.Class || cls.class,
+                available: parseInt(cls.Available || cls.available || '0'),
+                total: parseInt(cls.Total || cls.total || '100'),
+                waitlist: parseInt(cls.Waitlist || cls.waitlist || '0'),
+                price: parseInt(cls.Price || cls.price || '0'),
+                status: cls.Status || cls.status || 'Available',
+            })),
+        };
+    } catch (e) {
+        console.error('Error transforming availability response:', e);
+        return null;
+    }
+}
+
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const train = searchParams.get('train');
@@ -19,13 +45,13 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'train, date, and class are required' }, { status: 400 });
     }
 
-    if (RAILWAY_API_KEY) {
+    if (process.env.RAILWAY_API_KEY) {
         try {
             const res = await fetch(
                 `https://${RAILWAY_API_HOST}/api/v3/checkSeatAvailability?trainNo=${train}&date=${date}&classType=${cls}`,
                 {
                     headers: {
-                        'X-RapidAPI-Key': RAILWAY_API_KEY,
+                        'X-RapidAPI-Key': process.env.RAILWAY_API_KEY,
                         'X-RapidAPI-Host': RAILWAY_API_HOST,
                     },
                     next: { revalidate: 300 },
@@ -33,20 +59,35 @@ export async function GET(request: NextRequest) {
             );
 
             if (res.ok) {
-                const data = await res.json();
-                return NextResponse.json(data, {
-                    headers: { 'Cache-Control': 'public, s-maxage=300' },
-                });
+                const apiResponse = await res.json();
+                
+                // Check if API returned success
+                if (apiResponse.status === true && apiResponse.data) {
+                    const transformed = transformAvailabilityResponse(apiResponse);
+                    if (transformed) {
+                        return NextResponse.json(transformed, {
+                            headers: { 'Cache-Control': 'public, s-maxage=300' },
+                        });
+                    }
+                }
             }
-        } catch {
-            // Fall through
+        } catch (e) {
+            console.error('Railway availability API error:', e);
+            // Fall through to mock
         }
     }
 
     // Mock fallback
-    const availability = getAvailability(train, date, cls);
-    return NextResponse.json(
-        { availability },
-        { headers: { 'Cache-Control': 'public, s-maxage=60' } }
-    );
+    try {
+        const availability = getAvailability(train, date, cls);
+        return NextResponse.json(
+            { availability },
+            { headers: { 'Cache-Control': 'public, s-maxage=60' } }
+        );
+    } catch (err) {
+        return NextResponse.json(
+            { error: 'Failed to get availability' },
+            { status: 500 }
+        );
+    }
 }

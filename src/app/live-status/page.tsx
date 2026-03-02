@@ -5,29 +5,108 @@ import {
     Radio, MapPin, Clock, Gauge, AlertTriangle, CheckCircle2,
     RefreshCw, Navigation, ArrowRight, ChevronRight
 } from 'lucide-react';
-import { simulateLiveStatus, getAllTrainsForLiveStatus } from '@/lib/live-tracker';
 import { trains } from '@/data/trains';
 import { LiveTrainStatus } from '@/lib/types';
 import { formatDuration, statusColor } from '@/lib/utils';
 
+interface TrainInfo {
+    number: string;
+    name: string;
+    from: string;
+    to: string;
+    fromName: string;
+    toName: string;
+    departureTime: string;
+    arrivalTime: string;
+    duration: string;
+    type: string;
+}
+
 export default function LiveStatusPage() {
-    const allTrains = getAllTrainsForLiveStatus();
-    const [selectedTrain, setSelectedTrain] = useState(allTrains[0]?.number || '');
+    const [mounted, setMounted] = useState(false);
+    const [allTrains, setAllTrains] = useState<TrainInfo[]>([]);
+    const [selectedTrain, setSelectedTrain] = useState('');
     const [status, setStatus] = useState<LiveTrainStatus | null>(null);
     const [autoRefresh, setAutoRefresh] = useState(true);
     const [lastRefresh, setLastRefresh] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // avoid hydration mismatch by only rendering content after client mount
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Fetch list of trains
+    useEffect(() => {
+        const fetchTrains = async () => {
+            try {
+                const response = await fetch('/api/trains?limit=100');
+                const data = await response.json();
+                if (data.trains && Array.isArray(data.trains)) {
+                    setAllTrains(data.trains);
+                    if (data.trains.length > 0) {
+                        setSelectedTrain(prev => prev || data.trains[0].number);
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to fetch trains:', err);
+                // Fallback to empty state
+            }
+        };
+        fetchTrains();
+    }, []);
+
+    // Fetch list of trains
+    useEffect(() => {
+        const fetchTrains = async () => {
+            try {
+                const response = await fetch('/api/trains?limit=100');
+                const data = await response.json();
+                if (data.trains && Array.isArray(data.trains)) {
+                    setAllTrains(data.trains);
+                    if (data.trains.length > 0 && !selectedTrain) {
+                        setSelectedTrain(data.trains[0].number);
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to fetch trains:', err);
+                // Fallback to empty state
+            }
+        };
+        fetchTrains();
+    }, []);
 
     const refreshStatus = useCallback(() => {
         if (!selectedTrain) return;
-        const s = simulateLiveStatus(selectedTrain);
-        setStatus(s);
-        setLastRefresh(new Date().toLocaleTimeString());
+        
+        setLoading(true);
+        setError(null);
+
+        const fetchStatus = async () => {
+            try {
+                const response = await fetch(`/api/live-status?trainNumber=${selectedTrain}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch status');
+                }
+                const data: LiveTrainStatus = await response.json();
+                setStatus(data);
+                setLastRefresh(new Date().toLocaleTimeString());
+            } catch (err) {
+                console.error('Failed to fetch live status:', err);
+                setError(err instanceof Error ? err.message : 'Failed to fetch live status');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStatus();
     }, [selectedTrain]);
 
     useEffect(() => {
         refreshStatus();
-    }, [refreshStatus]);
+    }, [refreshStatus, selectedTrain]);
 
     useEffect(() => {
         if (!autoRefresh) return;
@@ -50,6 +129,16 @@ export default function LiveStatusPage() {
         const y = ((maxLat - lat) / (maxLat - minLat)) * 100;
         return { x: `${x}%`, y: `${y}%` };
     };
+
+    if (!mounted) {
+        // render placeholder on server/client before hydration complete
+        return (
+            <div className="glass-card" style={{ padding: '32px', textAlign: 'center' }}>
+                <RefreshCw size={24} style={{ margin: '0 auto 16px', animation: 'spin 2s linear infinite', color: 'var(--accent-blue)' }} />
+                <p style={{ color: 'var(--text-muted)' }}>Loading train data...</p>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -117,6 +206,39 @@ export default function LiveStatusPage() {
 
                     {/* Train Details */}
                     <div className="flex-col gap-4">
+                        {loading && (
+                            <div className="glass-card" style={{ textAlign: 'center', padding: '32px' }}>
+                                <RefreshCw size={24} style={{ margin: '0 auto 16px', animation: 'spin 2s linear infinite', color: 'var(--accent-blue)' }} />
+                                <p style={{ color: 'var(--text-muted)' }}>Loading live status...</p>
+                            </div>
+                        )}
+                        
+                        {error && (
+                            <div className="glass-card" style={{ borderLeft: '3px solid var(--error)', padding: '16px' }}>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                                    <AlertTriangle size={20} style={{ color: 'var(--error)', flexShrink: 0, marginTop: '2px' }} />
+                                    <div>
+                                        <div style={{ color: 'var(--error)', fontWeight: 600, marginBottom: '4px' }}>Error Loading Status</div>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{error}</p>
+                                        <button 
+                                            className="btn btn-sm btn-secondary"
+                                            onClick={refreshStatus}
+                                            style={{ marginTop: '8px' }}
+                                        >
+                                            <RefreshCw size={12} /> Retry
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {!selectedTrain && !loading && (
+                            <div className="glass-card" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                                <Radio size={32} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
+                                <p>Select a train to view live status</p>
+                            </div>
+                        )}
+
                         {status && train && (
                             <>
                                 {/* Status Header */}
