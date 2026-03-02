@@ -43,7 +43,26 @@ export async function getLiveStatus(trainNumber: string): Promise<ApiResponse<Li
             }
         }
 
-        return response;
+        let liveData = response.data as any;
+
+        // Unwrap RapidAPI response if wrapped in { status: true, data: {...} }
+        if (liveData && typeof liveData.status === 'boolean' && liveData.data) {
+            if (liveData.status === false) {
+                return {
+                    data: null,
+                    error: liveData.message || 'Train not found.',
+                    status: 404,
+                    cached: response.cached,
+                    timestamp: response.timestamp,
+                };
+            }
+            liveData = liveData.data;
+        }
+
+        return {
+            ...response,
+            data: liveData as LiveTrainStatus,
+        };
     } catch {
         // Fallback to mock
         const mock = simulateLiveStatus(trainNumber);

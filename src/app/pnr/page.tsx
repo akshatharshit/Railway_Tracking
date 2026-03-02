@@ -29,33 +29,39 @@ export default function PNRPage() {
 
         try {
             const response = await getPNRStatus(pnr);
-            if (response.data) {
+            if (response.data && response.data.pnrNumber && response.data.passengers) {
                 setPnrStatus(response.data);
 
                 // Run AI prediction for non-confirmed passengers
                 const firstPassenger = response.data.passengers[0];
                 if (firstPassenger && firstPassenger.currentStatus !== 'CNF') {
-                    const wlMatch = firstPassenger.currentStatus.match(/\d+/);
-                    const wlPosition = wlMatch ? parseInt(wlMatch[0]) : 10;
-                    const isRAC = firstPassenger.currentStatus.startsWith('RAC');
-                    const travelDate = new Date(response.data.dateOfJourney);
-                    const today = new Date();
-                    const daysToTravel = Math.max(1, Math.ceil((travelDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
+                    try {
+                        const wlMatch = firstPassenger.currentStatus.match(/\d+/);
+                        const wlPosition = wlMatch ? parseInt(wlMatch[0]) : 10;
+                        const isRAC = firstPassenger.currentStatus.startsWith('RAC');
+                        const travelDate = new Date(response.data.dateOfJourney);
+                        const today = new Date();
+                        const daysToTravel = Math.max(1, Math.ceil((travelDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
 
-                    const pred = predictConfirmation({
-                        waitlistPosition: wlPosition,
-                        daysToTravel,
-                        trainClass: response.data.classType,
-                        isRACNotWL: isRAC,
-                        isTatkal: response.data.quota === 'Tatkal',
-                        travelDate: response.data.dateOfJourney,
-                    });
-                    setPrediction(pred);
+                        const pred = predictConfirmation({
+                            waitlistPosition: wlPosition,
+                            daysToTravel,
+                            trainClass: response.data.classType || '3AC',
+                            isRACNotWL: isRAC,
+                            isTatkal: response.data.quota === 'Tatkal',
+                            travelDate: response.data.dateOfJourney,
+                        });
+                        setPrediction(pred);
+                    } catch (predError) {
+                        console.warn('Prediction failed, continuing without prediction:', predError);
+                        // Continue without prediction if it fails
+                    }
                 }
             } else {
                 setError(response.error || 'PNR not found');
             }
-        } catch {
+        } catch (err) {
+            console.error('PNR fetch error:', err);
             setError('Failed to fetch PNR status. Please try again.');
         } finally {
             setLoading(false);
@@ -171,8 +177,12 @@ export default function PNRPage() {
                         <div className="pnr-meta-row">
                             <span className="pnr-meta">Class: <strong>{pnrStatus.classType}</strong></span>
                             <span className="pnr-meta">Quota: <strong>{pnrStatus.quota}</strong></span>
-                            <span className="pnr-meta">Fare: <strong>₹{pnrStatus.fare.toLocaleString()}</strong></span>
-                            <span className="pnr-meta">Booked: <strong>{new Date(pnrStatus.bookingDate).toLocaleDateString('en-IN')}</strong></span>
+                            {pnrStatus.fare !== undefined && pnrStatus.fare !== null && (
+                                <span className="pnr-meta">Fare: <strong>₹{pnrStatus.fare.toLocaleString()}</strong></span>
+                            )}
+                            {pnrStatus.bookingDate && (
+                                <span className="pnr-meta">Booked: <strong>{new Date(pnrStatus.bookingDate).toLocaleDateString('en-IN')}</strong></span>
+                            )}
                         </div>
                     </div>
 
@@ -187,7 +197,7 @@ export default function PNRPage() {
                                 <span>Coach/Berth</span>
                                 <span>Berth Type</span>
                             </div>
-                            {pnrStatus.passengers.map((p) => (
+                            {pnrStatus.passengers?.map((p) => (
                                 <div key={p.number} className="passenger-row">
                                     <span className="passenger-num">P{p.number}</span>
                                     <span className="passenger-status">{p.bookingStatus}</span>
@@ -233,7 +243,7 @@ export default function PNRPage() {
                                 <div className="prediction-details">
                                     <p className="prediction-recommendation">{prediction.recommendation}</p>
                                     <div className="prediction-reasoning">
-                                        {prediction.reasoning.map((r, i) => (
+                                        {prediction.reasoning?.map((r, i) => (
                                             <div key={i} className="reasoning-item">
                                                 <span className="reasoning-dot" />
                                                 {r}
@@ -247,7 +257,7 @@ export default function PNRPage() {
                             <div className="prediction-factors">
                                 <h4>Contributing Factors</h4>
                                 <div className="factors-grid">
-                                    {prediction.factors.map((f, i) => (
+                                    {prediction.factors?.map((f, i) => (
                                         <div key={i} className={`factor-item impact-${f.impact}`}>
                                             <span className="factor-name">{f.name}</span>
                                             <span className="factor-desc">{f.description}</span>
@@ -260,7 +270,7 @@ export default function PNRPage() {
                             </div>
 
                             {/* Alternative dates */}
-                            {prediction.alternativeDates.length > 0 && (
+                            {prediction.alternativeDates && prediction.alternativeDates.length > 0 && (
                                 <div className="prediction-alternatives">
                                     <h4>📅 Better Date Options</h4>
                                     <div className="alternatives-list">

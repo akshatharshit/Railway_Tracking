@@ -35,13 +35,13 @@ export interface PNRStatus {
 // ── PNR Lookup ───────────────────────────────
 export async function getPNRStatus(pnrNumber: string): Promise<ApiResponse<PNRStatus>> {
     try {
-        const response = await apiGet<PNRStatus & { useMock?: boolean }>(
+        const response = await apiGet<any>(
             `${ENDPOINTS.pnr}?pnr=${pnrNumber}`,
             { cacheTtl: CACHE_TTL.pnr }
         );
 
-        // If API returned mock indicator or failed, fall back to local mock
-        if (response.error || !response.data || (response.data as { useMock?: boolean }).useMock) {
+        // If API returned error or no data, fall back to mock
+        if (response.error || !response.data) {
             const mock = generateMockPNR(pnrNumber);
             return {
                 data: mock,
@@ -52,8 +52,39 @@ export async function getPNRStatus(pnrNumber: string): Promise<ApiResponse<PNRSt
             };
         }
 
-        return response as ApiResponse<PNRStatus>;
-    } catch {
+        const apiData = response.data;
+
+        // Check if response indicates mock should be used
+        if (apiData.useMock) {
+            const mock = generateMockPNR(pnrNumber);
+            return {
+                data: mock,
+                error: null,
+                status: 200,
+                cached: false,
+                timestamp: Date.now(),
+            };
+        }
+
+        // Validate the PNR data has required fields (after transformation in route handler)
+        if (!apiData.pnrNumber || !apiData.passengers || !Array.isArray(apiData.passengers)) {
+            // If data structure is invalid, use mock
+            const mock = generateMockPNR(pnrNumber);
+            return {
+                data: mock,
+                error: null,
+                status: 200,
+                cached: false,
+                timestamp: Date.now(),
+            };
+        }
+
+        return {
+            ...response,
+            data: apiData as PNRStatus,
+        };
+    } catch (err) {
+        console.error('getPNRStatus error:', err);
         const mock = generateMockPNR(pnrNumber);
         return {
             data: mock,
