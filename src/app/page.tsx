@@ -26,14 +26,14 @@ export default function DashboardPage() {
   const popularRoutes = getPopularRoutes();
 
   const stats = [
-    { label: 'Active Trains', value: trains.length, icon: Train, color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', change: 12 },
+    { label: 'Active Trains', value: trains.length, icon: Train, color: '#0ea5a4', bg: 'rgba(14,165,164,0.12)', change: 12 },
     { label: 'Stations Covered', value: stations.length, icon: MapPin, color: '#10b981', bg: 'rgba(16,185,129,0.15)', change: 5 },
     { label: 'Avg Speed', value: `${Math.round(trains.reduce((s, t) => s + t.avgSpeed, 0) / trains.length)} km/h`, icon: Zap, color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', change: 3 },
     { label: 'Network Coverage', value: `${Math.round(trains.reduce((s, t) => s + t.totalDistance, 0)).toLocaleString()} km`, icon: Route, color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)', change: 8 },
   ];
 
   const quickActions = [
-    { href: '/search', icon: Search, title: 'Search Trains', desc: 'Find trains between any two stations', gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' },
+    { href: '/search', icon: Search, title: 'Search Trains', desc: 'Find trains between any two stations', gradient: 'linear-gradient(135deg, #0ea5a4, #06b6d4)' },
     { href: '/live-status', icon: Radio, title: 'Live Tracking', desc: 'Real-time train running status', gradient: 'linear-gradient(135deg, #10b981, #059669)' },
     { href: '/availability', icon: Armchair, title: 'Seat Check', desc: 'Check availability & coach layout', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
     { href: '/route-optimizer', icon: Route, title: 'Optimize Route', desc: 'Find the best route for your trip', gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' },
@@ -224,7 +224,7 @@ export default function DashboardPage() {
 function categoryColorMap(cat: string): string {
   const colors: Record<string, string> = {
     'Rajdhani': '#f59e0b', 'Shatabdi': '#10b981', 'Duronto': '#8b5cf6',
-    'Superfast': '#3b82f6', 'Express': '#6366f1', 'Mail': '#ec4899',
+    'Superfast': '#0ea5a4', 'Express': '#6366f1', 'Mail': '#ec4899',
     'Vande Bharat': '#ef4444', 'Garib Rath': '#14b8a6', 'Tejas': '#06b6d4',
   };
   return colors[cat] || '#64748b';

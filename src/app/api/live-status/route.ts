@@ -16,6 +16,7 @@ function transformLiveStatusResponse(apiData: any) {
 
     try {
         return {
+            
             trainNumber: data.TrainNo || data.trainNumber,
             trainName: data.TrainName || data.trainName,
             status: data.Status ? data.Status.toLowerCase().replace(' ', '-') : 'on-time',

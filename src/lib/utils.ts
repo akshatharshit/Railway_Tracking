@@ -59,7 +59,7 @@ export function categoryColor(category: string): string {
         'Rajdhani': '#f59e0b',
         'Shatabdi': '#10b981',
         'Duronto': '#8b5cf6',
-        'Superfast': '#3b82f6',
+        'Superfast': '#0ea5a4',
         'Express': '#6366f1',
         'Mail': '#ec4899',
         'Garib Rath': '#14b8a6',
@@ -74,7 +74,7 @@ export function statusColor(status: string): string {
     const colors: Record<string, string> = {
         'on-time': '#10b981',
         'delayed': '#ef4444',
-        'early': '#3b82f6',
+        'early': '#0ea5a4',
         'cancelled': '#6b7280',
         'not-started': '#f59e0b',
     };

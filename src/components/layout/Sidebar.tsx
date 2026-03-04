@@ -37,7 +37,7 @@ export function Sidebar() {
             <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <div className="sidebar-logo">
                     <div className="flex items-center gap-2">
-                        <Train size={22} style={{ color: '#3b82f6' }} />
+                        <Train size={22} style={{ color: '#0ea5a4' }} />
                         <h1>RailIntel</h1>
                     </div>
                     <p>Intelligence Platform</p>

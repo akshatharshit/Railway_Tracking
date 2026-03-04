@@ -1,22 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Colors */
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --bg-card: rgba(17, 24, 39, 0.8);
-  --bg-card-hover: rgba(30, 41, 59, 0.9);
-  --bg-glass: rgba(255, 255, 255, 0.05);
-  --bg-glass-hover: rgba(255, 255, 255, 0.08);
-  --border-glass: rgba(255, 255, 255, 0.1);
-  --border-glass-bright: rgba(255, 255, 255, 0.15);
+  /* Colors (Light, clean + teal accent) */
+  --bg-primary: #f7fafc; /* page background */
+  --bg-secondary: #ffffff; /* header / sidebar backdrop */
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --bg-card-hover: rgba(245, 247, 250, 0.95);
+  --bg-glass: rgba(15, 23, 42, 0.02);
+  --bg-glass-hover: rgba(15, 23, 42, 0.04);
+  --border-glass: rgba(15, 23, 42, 0.06);
+  --border-glass-bright: rgba(15, 23, 42, 0.09);
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-accent: #38bdf8;
+  --text-primary: #0f172a; /* slate-900 */
+  --text-secondary: #334155; /* slate-700 */
+  --text-muted: #64748b; /* slate-500 */
+  --text-accent: #14b8a6; /* teal-400 */
 
-  --accent-blue: #3b82f6;
+  --accent-blue: #0ea5a4; /* teal */
   --accent-cyan: #06b6d4;
   --accent-green: #10b981;
   --accent-amber: #f59e0b;
@@ -24,26 +24,26 @@
   --accent-purple: #8b5cf6;
   --accent-pink: #ec4899;
 
-  --gradient-primary: linear-gradient(135deg, #3b82f6, #06b6d4);
+  --gradient-primary: linear-gradient(135deg, #0ea5a4, #06b6d4);
   --gradient-warm: linear-gradient(135deg, #f59e0b, #ef4444);
   --gradient-cool: linear-gradient(135deg, #8b5cf6, #ec4899);
   --gradient-success: linear-gradient(135deg, #10b981, #06b6d4);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
-  --shadow-glow-cyan: 0 0 20px rgba(6, 182, 212, 0.3);
+  --shadow-sm: 0 1px 6px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.12);
+  --shadow-glow-blue: 0 0 18px rgba(14, 165, 164, 0.12);
+  --shadow-glow-cyan: 0 0 18px rgba(6, 182, 212, 0.12);
 
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 400ms ease;
+  --transition-fast: 120ms ease;
+  --transition-normal: 220ms ease;
+  --transition-slow: 360ms ease;
 }
 
 * {
