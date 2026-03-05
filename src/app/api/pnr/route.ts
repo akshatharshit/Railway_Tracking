@@ -65,6 +65,8 @@ export async function GET(request: NextRequest) {
                 }
             );
 
+            
+
             if (res.ok) {
                 const apiResponse = await res.json();
                 
