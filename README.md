@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Railway_Tracking
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/-Next.js-blue?logo=nextjs&logoColor=white) ![React](https://img.shields.io/badge/-React-blue?logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-blue?logo=typescript&logoColor=white)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📝 Description
+
+Railway_Tracking is a sophisticated web-based application designed to provide efficient and real-time monitoring of railway systems. Built with a modern tech stack including Next.js, React, and TypeScript, the platform ensures high performance, scalability, and type safety across its entire architecture. By leveraging robust API integrations, Railway_Tracking delivers accurate transit data through a responsive and intuitive interface, making it an ideal solution for tracking train schedules, routes, and live updates in a seamless web environment.
+
+## ✨ Features
+
+- 🌐 Api
+- 🕸️ Web
+
+
+## 🛠️ Tech Stack
+
+- next.js Next.js
+- ⚛️ React
+- 📜 TypeScript
+
+
+## 📦 Key Dependencies
+
+```
+lucide-react: ^0.575.0
+next: 16.1.6
+react: 19.2.3
+react-dom: 19.2.3
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Run Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **dev**: `npm run dev`
+- **build**: `npm run build`
+- **start**: `npm run start`
+- **lint**: `npm run lint`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+.
+├── eslint.config.mjs
+├── next.config.ts
+├── package.json
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── manifest.json
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── src
+│   ├── app
+│   │   ├── analytics
+│   │   │   └── page.tsx
+│   │   ├── api
+│   │   │   ├── availability
+│   │   │   │   └── route.ts
+│   │   │   ├── live-status
+│   │   │   │   └── route.ts
+│   │   │   ├── pnr
+│   │   │   │   └── route.ts
+│   │   │   ├── station
+│   │   │   │   └── route.ts
+│   │   │   ├── stream
+│   │   │   │   └── live
+│   │   │   │       └── route.ts
+│   │   │   ├── trains
+│   │   │   │   └── route.ts
+│   │   │   └── weather
+│   │   │       └── route.ts
+│   │   ├── availability
+│   │   │   └── page.tsx
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── live-status
+│   │   │   └── page.tsx
+│   │   ├── page.module.css
+│   │   ├── page.tsx
+│   │   ├── pnr
+│   │   │   └── page.tsx
+│   │   ├── route-optimizer
+│   │   │   └── page.tsx
+│   │   └── search
+│   │       └── page.tsx
+│   ├── components
+│   │   ├── analytics
+│   │   │   ├── DemandHeatmap.tsx
+│   │   │   ├── FareFluctuation.tsx
+│   │   │   ├── ReliabilityChart.tsx
+│   │   │   └── WeatherOverlay.tsx
+│   │   └── layout
+│   │       └── Sidebar.tsx
+│   ├── data
+│   │   ├── routes.ts
+│   │   ├── stations.ts
+│   │   └── trains.ts
+│   ├── hooks
+│   │   ├── useApiQuery.ts
+│   │   ├── useLiveTracking.ts
+│   │   └── useSSE.ts
+│   └── lib
+│       ├── ai
+│       │   ├── confirmation-predictor.ts
+│       │   ├── delay-predictor.ts
+│       │   └── demand-analyzer.ts
+│       ├── analytics
+│       │   ├── fare-tracker.ts
+│       │   ├── reliability-scorer.ts
+│       │   ├── transfer-risk.ts
+│       │   └── weather-optimizer.ts
+│       ├── api
+│       │   ├── availability.ts
+│       │   ├── client.ts
+│       │   ├── config.ts
+│       │   ├── pnr.ts
+│       │   ├── train.ts
+│       │   └── weather.ts
+│       ├── availability.ts
+│       ├── live-tracker.ts
+│       ├── route-optimizer.ts
+│       ├── search-engine.ts
+│       ├── types.ts
+│       └── utils.ts
+└── tsconfig.json
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Development Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Node.js/JavaScript Setup
+1. Install Node.js (v18+ recommended)
+2. Install dependencies: `npm install` or `yarn install`
+3. Start development server: (Check scripts in `package.json`, e.g., `npm run dev`)
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👥 Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Clone** your fork: `git clone https://github.com/akshatharshit/Railway_Tracking.git`
+3. **Create** a new branch: `git checkout -b feature/your-feature`
+4. **Commit** your changes: `git commit -am 'Add some feature'`
+5. **Push** to your branch: `git push origin feature/your-feature`
+6. **Open** a pull request
+
+Please ensure your code follows the project's style guidelines and includes tests where applicable.
+
